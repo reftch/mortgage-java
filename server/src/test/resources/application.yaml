@@ -1,0 +1,10 @@
+server:
+  port: 8080
+  host: "localhost"
+database:
+  url: 'jdbc:h2:mem:testdb'
+  enabled: true
+logging:
+  level: "INFO"
+
+"""

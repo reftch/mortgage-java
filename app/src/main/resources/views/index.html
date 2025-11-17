@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <meta name="description" content="Hypothekenrechner editor web application">
+  <title>{{ title }}</title>
+  <link rel="icon" href="/static/images/euro.svg" type="image/x-icon" />
+  <link href="/static/reset.css" rel="stylesheet" media="screen" />
+  <link href="/static/fonts.css" rel="stylesheet" media="screen" />
+  <script type="text/javascript" src="/static/js/process.js"></script>
+  {{#if mode.isProduction == false}}
+  <script type="module" src="http://localhost:5173/@vite/client"></script>
+  <script type="module" src="http://localhost:5173/src/main.tsx"></script>
+  {{/if}}
+  {{#if mode.isProduction == true}}
+  <link href="/static/ui/styles.css" rel="stylesheet" media="screen" />
+  <script type="module" src="/static/ui/index.js"></script>
+  {{/if}}
+</head>
+
+<body>
+  <div id="root"></div>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+name: mortgage
+
+services:  
+  app:
+    env_file: ./.env
+    image: mortgage:1.0.0
+    # ports:
+    #   - 8080:8082
+    build:
+      context: ../..
+      dockerfile: ./deployment/prod/Dockerfile
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.app.rule=Host(`mortgage.reftch.com`)
+      - traefik.http.services.app.loadbalancer.server.port=8082
+
+networks:
+  traefik_proxy:
+    external: true

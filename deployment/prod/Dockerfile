@@ -1,0 +1,63 @@
+# ==========================
+# Build Stage
+# ==========================
+FROM gradle:jdk25-alpine AS build-stage
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache nodejs npm unzip
+
+# Copy Gradle configuration
+COPY gradlew ./gradlew
+COPY gradle ./gradle
+
+# Copy project sources
+COPY app ./app
+COPY server ./server
+COPY web ./web
+COPY settings.gradle ./settings.gradle
+
+# Build ui
+RUN npm install --prefix ./web
+RUN npm run build --prefix ./web
+
+# Build the project (skip tests)
+RUN ./gradlew build copyDeps -x test
+
+RUN jdeps --ignore-missing-deps -q \
+--recursive \
+--multi-release 25 \
+--print-module-deps \
+--class-path 'app/build/dependencies/*' \
+app/build/libs/app.jar > deps.info
+
+RUN jlink \
+--add-modules $(cat deps.info),java.management \
+--strip-debug \
+--compress zip-6 \
+--no-header-files \
+--no-man-pages \
+--output /productionjre
+
+# Unpack build distribution
+RUN unzip ./app/build/distributions/app.zip -d /distro
+
+# ==========================
+# Runtime Stage
+# ==========================docker 
+FROM alpine:latest AS release-stage
+
+# Copy the custom runtime and built app
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH="$JAVA_HOME/bin:$JAVA_HOME/lib:$PATH"
+COPY --from=build-stage /productionjre $JAVA_HOME
+
+COPY --from=build-stage /distro/app/ $JAVA_HOME
+
+WORKDIR $JAVA_HOME
+
+# Optionally expose the server port
+# EXPOSE 8081
+
+ENTRYPOINT ["bin/app"]
