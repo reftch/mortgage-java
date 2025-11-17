@@ -2,9 +2,9 @@ import { useEffect } from "preact/hooks";
 import { createRef } from "preact";
 import { signal } from '@preact/signals';
 import { Separator } from "./components/ui/separator";
-import Details from "./details";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./components/ui/table";
 import { v4 as uuidv4 } from 'uuid';
-import './table.css';
+import Details from "./details";
 
 type Row = { cells: Array<{ value: number; width: number; minWidth: number }> };
 
@@ -28,7 +28,7 @@ export default function TableData({ amount, rate, overpayment, years }: any) {
 
   useEffect(() => {
     if (bodyRef.current) {
-      let offset = isDetailsOpen.value ? 435 : '330'
+      let offset = isDetailsOpen.value ? 390 : '285'
       bodyRef.current.style.height = `calc(100vh - ${offset}px)`;
     }
   }, [isDetailsOpen.value]);
@@ -80,10 +80,6 @@ export default function TableData({ amount, rate, overpayment, years }: any) {
       // calculate overall payment
       overall.value += payment;
     }
-
-    if (bodyRef.current.offsetHeight < 300) {
-      bodyRef.current.style.height = '1000px';
-    }
   }, [amount, rate, years, overpayment]);
 
   useEffect(() => {
@@ -106,58 +102,32 @@ export default function TableData({ amount, rate, overpayment, years }: any) {
     return (rate * amount) / (Math.pow(1 + rate, -months));
   };
 
-  const renderHeader = () => {
-    return (
-      <thead>
-        <tr>
-          {headers.map((h: any) => (
-            <th
-              className="header"
-              key={h.title}
-              style={{ width: `${h.width}px` }}
-            >
-              <div className="text-block111" >
-                {h.title}
-              </div>
-            </th>
-          ))}
-        </tr>
-      </thead>
-    );
-  };
-
-  const renderRow = (row: Row) => {
-    return (
-      <tr key={uuidv4()} className={row.cells[7].value > 0 ? "selected" : ""}>
-        {row.cells.map((cell) => (
-          <td
-            key={uuidv4()}
-            style={{ width: `${cell.width}px` }}
-          >
-            {cell.value}
-          </td>
-        ))}
-      </tr>
-    );
-  };
-
-  const renderBody = () => {
-    return (
-      <tbody ref={bodyRef} className="body-scroll">
-        {data.value?.map((row) => renderRow(row))}
-      </tbody>
-    );
-  };
-
   return (
     <>
       <Details isOpen={isDetailsOpen} overall={overall.value} amount={amount} onChange={(data: any) => isDetailsOpen.value = data} />
       <Separator />
-      <div className="flex flex-col px-4">
-        <table>
-          {renderHeader()}
-          {renderBody()}
-        </table>
+      <div ref={bodyRef} className="flex flex-col px-4">
+        <Table>
+          <TableHeader className="sticky top-0 bg-muted">
+            <TableRow>
+              {headers.map((h: any) =>
+                <TableHead key={h.title}>{h.title}</TableHead>
+              )}
+            </TableRow>
+          </TableHeader>
+          <TableBody className="overflow-y-auto">
+            {data.value?.map((row) => (
+              <TableRow
+                key={uuidv4()}
+                className={row.cells[7].value > 0 ? '!bg-input' : 'odd:bg-background even:bg-header'}
+              >
+                {row.cells.map((cell) => (
+                  <TableCell className="font-medium">{cell.value}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </>
   );

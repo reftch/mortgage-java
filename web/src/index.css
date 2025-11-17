@@ -128,7 +128,7 @@
 
 body {
   max-width: 920px;
-  min-width: 500px;
+  min-width: 320px;
   overflow: auto;
   margin: auto;
 }
