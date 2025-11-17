@@ -1,10 +1,10 @@
 import { useEffect } from "preact/hooks";
+import { createRef } from "preact";
+import { signal } from '@preact/signals';
 import { Separator } from "./components/ui/separator";
 import Details from "./details";
 import { v4 as uuidv4 } from 'uuid';
-import { signal } from '@preact/signals';
 import './table.css';
-import { createRef } from "preact";
 
 type Row = { cells: Array<{ value: number; width: number; minWidth: number }> };
 
@@ -23,12 +23,12 @@ const data = signal<Array<Row>>();
 const overall = signal<number>(0.0);
 const isDetailsOpen = signal<boolean>(true);
 
-export default function Table({ amount, rate, overpayment, years }: any) {
+export default function TableData({ amount, rate, overpayment, years }: any) {
   const bodyRef = createRef();
 
   useEffect(() => {
     if (bodyRef.current) {
-      const offset = isDetailsOpen.value ? 455 : '350'
+      const offset = isDetailsOpen.value ? 435 : '330'
       bodyRef.current.style.height = `calc(100vh - ${offset}px)`;
     }
   }, [isDetailsOpen.value]);

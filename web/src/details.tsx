@@ -80,7 +80,7 @@ export default function Details({ ...props }) {
 
             <div className="md:col-span-3 w-full items-center pt-4">
               <Label htmlFor="grund-rate" className="pb-2">Grunderwerbsteuer (required)</Label>
-              <InputGroup>
+              <InputGroup className="rounded">
                 <InputGroupInput id="grund-rate" readOnly value={grunderwerbsteuer.value.rate.toFixed(1)} />
                 <InputGroupAddon>
                   <InputGroupText>%</InputGroupText>
@@ -89,7 +89,7 @@ export default function Details({ ...props }) {
                   <Menubar>
                     <MenubarMenu>
                       <MenubarTrigger className="cursor-pointer">{grunderwerbsteuer.value.title}</MenubarTrigger>
-                      <MenubarContent>
+                      <MenubarContent className="rounded">
                         {GRUNDERWERBSTEUER_LIST.map((g) => (
                           <MenubarItem key={g.rank} className="flex justify-between cursor-pointer" onClick={() => onSelectRate(g.rank)}>
                             <div>{g.title}</div>
@@ -149,7 +149,7 @@ export default function Details({ ...props }) {
 
             <div className="md:col-span-3 w-full items-center pt-4">
               <Label htmlFor="grund-rate" className="pb-2">Maklerprovision, 0€</Label>
-              <InputGroup>
+              <InputGroup className="rounded">
                 <InputGroupInput id="grund-rate" readOnly value={makler.value.makler!.toFixed(2)} />
                 <InputGroupAddon>
                   <InputGroupText>%</InputGroupText>
@@ -158,7 +158,7 @@ export default function Details({ ...props }) {
                   <Menubar>
                     <MenubarMenu>
                       <MenubarTrigger className="cursor-pointer">{makler.value.title}</MenubarTrigger>
-                      <MenubarContent>
+                      <MenubarContent className="rounded">
                         <MenubarItem key={UNSELECTED.rank} className="flex justify-between cursor-pointer" onClick={() => onSelectMakler(UNSELECTED.rank)}>
                           <div>{UNSELECTED.title}</div>
                           <div>{`${Number(UNSELECTED.makler).toFixed(1)}%`}</div>

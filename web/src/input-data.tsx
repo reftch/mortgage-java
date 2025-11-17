@@ -12,8 +12,8 @@ export default function InputData({ ...props }) {
   };
 
   return (
-    <div className="grid md:grid-cols-4 grid-cols-2 w-full p-4 pt-5 gap-4 justify-items-center">
-      <div className="grid w-full max-w-[200px] items-center">
+    <div className="grid md:grid-cols-4 grid-cols-2 w-full px-6 gap-4 justify-items-center">
+      <div className="grid w-full items-center">
         <Label htmlFor="amount" className="pb-2">Hypothekenschulden</Label>
         <InputGroup className="rounded">
           <InputGroupAddon>
@@ -34,7 +34,7 @@ export default function InputData({ ...props }) {
         <div className="pt-1 text-[13px] opacity-50">Geben Sie den Kapitalbetrag ein</div>
       </div>
 
-      <div className="grid w-full max-w-[200px] items-center">
+      <div className="grid w-full items-center">
         <Label htmlFor="rate" className="pb-2">Zinsen (pflichtfeld)</Label>
         <InputGroup className="rounded pb-0">
           <InputGroupAddon>
@@ -55,7 +55,7 @@ export default function InputData({ ...props }) {
         <div className="pt-1 text-[13px] opacity-50">Geben Sie den Zinsen ein</div>
       </div>
 
-      <div className="grid w-full max-w-[200px] items-center">
+      <div className="grid w-full items-center">
         <Label htmlFor="years" className="pb-2">Jahre (pflichtfeld)</Label>
         <InputGroup className="rounded pb-0">
           <InputGroupInput 
@@ -73,7 +73,7 @@ export default function InputData({ ...props }) {
         <div className="pt-1 text-[13px] opacity-50">Geben Sie den Zinsen ein</div>
       </div>
 
-      <div className="grid w-full max-w-[200px] items-center">
+      <div className="grid w-full items-center">
         <Label htmlFor="overpayment" className="pb-2">Einmalige Überzahlung</Label>
         <InputGroup className="rounded pb-0">
           <InputGroupAddon>
