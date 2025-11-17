@@ -45,17 +45,8 @@ const notaryFees = signal<number>(3.3);
 
 export default function Details({ ...props }) {
 
-  const onSelectRate = (rank: number) => {
-    grunderwerbsteuer.value = GRUNDERWERBSTEUER_LIST[rank - 1];
-  }
-
-  const onSelectMakler = (rank: number) => {
-    let value: Grunderwerbsteuer = UNSELECTED;
-    if (rank !== 0) {
-      value = GRUNDERWERBSTEUER_LIST[rank - 1];
-    }
-    makler.value = value
-  }
+  const onSelectRate = (rank: number) => grunderwerbsteuer.value = GRUNDERWERBSTEUER_LIST[rank - 1];
+  const onSelectMakler = (rank: number) => makler.value = rank === 0 ? UNSELECTED : GRUNDERWERBSTEUER_LIST[rank - 1];
 
   return (
     <Accordion

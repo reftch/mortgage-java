@@ -28,7 +28,7 @@ export default function TableData({ amount, rate, overpayment, years }: any) {
 
   useEffect(() => {
     if (bodyRef.current) {
-      const offset = isDetailsOpen.value ? 435 : '330'
+      let offset = isDetailsOpen.value ? 435 : '330'
       bodyRef.current.style.height = `calc(100vh - ${offset}px)`;
     }
   }, [isDetailsOpen.value]);
@@ -63,13 +63,13 @@ export default function TableData({ amount, rate, overpayment, years }: any) {
 
       const row: Row = {
         cells: [
-          { value: Math.floor(month / 12) + 1, width: 60,  minWidth: 60 },
-          { value: month, width: 80,  minWidth: 80 },
-          { value: Number(balance.toFixed(0)), width: 120,  minWidth: 120 },
-          { value: Number(payment.toFixed(2)), width: 100,  minWidth: 100 },
-          { value: Number(irPaid.toFixed(2)), width: 100,  minWidth: 100 },
-          { value: Number(amountPaid.toFixed(2)), width: 100,  minWidth: 100 },
-          { value: Number(newBalance.toFixed(0)), width: 120,  minWidth: 120 },
+          { value: Math.floor(month / 12) + 1, width: 60, minWidth: 60 },
+          { value: month, width: 80, minWidth: 80 },
+          { value: Number(balance.toFixed(0)), width: 120, minWidth: 120 },
+          { value: Number(payment.toFixed(2)), width: 100, minWidth: 100 },
+          { value: Number(irPaid.toFixed(2)), width: 100, minWidth: 100 },
+          { value: Number(amountPaid.toFixed(2)), width: 100, minWidth: 100 },
+          { value: Number(newBalance.toFixed(0)), width: 120, minWidth: 120 },
           { value: Number(addPayment.toFixed(0)), width: 200, minWidth: 100 },
         ],
       };
@@ -80,7 +80,27 @@ export default function TableData({ amount, rate, overpayment, years }: any) {
       // calculate overall payment
       overall.value += payment;
     }
+
+    if (bodyRef.current.offsetHeight < 300) {
+      bodyRef.current.style.height = '1000px';
+    }
   }, [amount, rate, years, overpayment]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (bodyRef.current && bodyRef.current.offsetHeight < 300) {
+        bodyRef.current.style.height = '300px';
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const getMonthlyPayment = (amount: number, rate: number, months: number) => {
     return (rate * amount) / (Math.pow(1 + rate, -months));
