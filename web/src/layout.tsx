@@ -1,11 +1,11 @@
+import { signal } from '@preact/signals';
+import { useEffect } from "preact/hooks";
 import { Card } from "./components/ui/card";
 import { Separator } from "./components/ui/separator";
 import InputData from "./input-data";
-import { signal } from '@preact/signals';
 import TableData from "./table-data";
 import type { IInputData, Row } from "./model";
 import Details from "./details";
-import { useEffect } from "preact/hooks";
 
 const sessionDataKey = 'inputdata'
 
@@ -18,7 +18,7 @@ const loadSessionData = (): IInputData => {
     grundRate: { title: "Baden-Württemberg", rate: 5.0, rank: 1, makler: 3.57 },
     makler: { title: "Nicht Ausgewählt", rate: 0.0, rank: 0, makler: 0.0 },
     landEntry: 0.5,
-    notaryFees: 3.3,
+    notaryFees: 0.95, // 3.3,
     isDetailsOpen: true,
   }
 

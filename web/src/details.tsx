@@ -73,7 +73,7 @@ export default function Details({ ...props }) {
           <div className="grid md:grid-cols-10 grid-cols-2 w-full gap-4 text-balance">
 
             <div className="md:col-span-3 w-full items-center pt-4">
-              <Label htmlFor="grund-rate" className="pb-2">Grunderwerbsteuer (required)</Label>
+              <Label htmlFor="grund-rate" className="pb-2">Grunderwerbsteuer, {((amount * grundRate.rate) / 100).toFixed(0)} €</Label>
               <InputGroup className="rounded">
                 <InputGroupInput id="grund-rate" readOnly value={grundRate.rate.toFixed(1)} />
                 <InputGroupAddon>
@@ -147,7 +147,7 @@ export default function Details({ ...props }) {
             </div>
 
             <div className="md:col-span-3 w-full items-center pt-4">
-              <Label htmlFor="grund-rate" className="pb-2">Maklerprovision, 0€</Label>
+              <Label htmlFor="grund-rate" className="pb-2">Maklerprovision, {((amount * makler.makler) / 100).toFixed(0)}€</Label>
               <InputGroup className="rounded">
                 <InputGroupInput id="grund-rate" readOnly value={makler.makler!.toFixed(2)} />
                 <InputGroupAddon>

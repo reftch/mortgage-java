@@ -35,7 +35,7 @@ export default function InputData({ ...props }) {
       </div>
 
       <div className="grid w-full items-center">
-        <Label htmlFor="rate" className="pb-2">Zinsen (pflichtfeld)</Label>
+        <Label htmlFor="rate" className="pb-2">Zinsen</Label>
         <InputGroup className="rounded pb-0">
           <InputGroupAddon>
             <InputGroupText>%</InputGroupText>
@@ -56,7 +56,7 @@ export default function InputData({ ...props }) {
       </div>
 
       <div className="grid w-full items-center">
-        <Label htmlFor="years" className="pb-2">Jahre (pflichtfeld)</Label>
+        <Label htmlFor="years" className="pb-2">Jahre</Label>
         <InputGroup className="rounded pb-0">
           <InputGroupInput 
             id="years" 
