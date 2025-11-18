@@ -22,8 +22,8 @@ export default function InputData({ ...props }) {
           <InputGroupInput
             id="amount"
             value={props.v.amount}
-            min="0"
-            step="10"
+            min="10000"
+            step="1000"
             type="number"
             onChange={(e: any) => handleChange('amount', Number(e.target.value))}
           />
@@ -43,7 +43,7 @@ export default function InputData({ ...props }) {
           <InputGroupInput
             id="rate"
             value={props.v.rate.toFixed(2)}
-            min="0"
+            min="0.5"
             step="0.05"
             type="number"
             onChange={(e: any) => handleChange('rate', Number(e.target.value))}

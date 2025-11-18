@@ -99,7 +99,7 @@ export default function TableData({ amount, rate, overpayment, years }: any) {
   }, []);
 
   const getMonthlyPayment = (amount: number, rate: number, months: number) => {
-    return (rate * amount) / (Math.pow(1 + rate, -months));
+    return (rate * amount) / (1 - Math.pow(1 + rate, -months));
   };
 
   return (
