@@ -3,14 +3,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "./
 import { Label } from "./components/ui/label";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "./components/ui/menubar";
 import { Separator } from "./components/ui/separator";
-import { signal } from '@preact/signals';
-
-export type Grunderwerbsteuer = {
-  title: string;
-  rate: number;
-  rank: number;
-  makler?: number;
-}
+import type { Grunderwerbsteuer, IInputData } from "./model";
 
 const GRUNDERWERBSTEUER_LIST: Grunderwerbsteuer[] = [
   { title: "Baden-Württemberg", rate: 5.0, rank: 1, makler: 3.57 },
@@ -38,15 +31,25 @@ const UNSELECTED = {
   makler: 0.0,
 };
 
-const grunderwerbsteuer = signal<Grunderwerbsteuer>(GRUNDERWERBSTEUER_LIST[0]);
-const makler = signal<Grunderwerbsteuer>(UNSELECTED);
-const landEntry = signal<number>(0.5);
-const notaryFees = signal<number>(3.3);
-
 export default function Details({ ...props }) {
+  const { amount, grundRate, makler, notaryFees, landEntry, isDetailsOpen } = props.v;
+  const { overall } = props;
 
-  const onSelectRate = (rank: number) => grunderwerbsteuer.value = GRUNDERWERBSTEUER_LIST[rank - 1];
-  const onSelectMakler = (rank: number) => makler.value = rank === 0 ? UNSELECTED : GRUNDERWERBSTEUER_LIST[rank - 1];
+  const handleChange = (field: keyof IInputData, value: number | boolean) => {
+    const getNewValue = (field: keyof IInputData, value: number | boolean) => {
+      if (field === 'makler') {
+        return value === 0 ? UNSELECTED : GRUNDERWERBSTEUER_LIST[(value as number) - 1];
+      } else if (field === 'grundRate') {
+        return GRUNDERWERBSTEUER_LIST[(value as number) - 1];
+      }
+      return value;
+    };
+
+    props.onChange({
+      ...props.v,
+      [field]: getNewValue(field, value)
+    });
+  };
 
   return (
     <Accordion
@@ -54,15 +57,15 @@ export default function Details({ ...props }) {
       type="single"
       collapsible
       className="w-full px-6"
-      defaultValue="item-1"
-      onValueChange={(value) => props.onChange(value === 'item-1')}
+      defaultValue={isDetailsOpen ? 'item-1' : ''}
+      onValueChange={(value) => handleChange('isDetailsOpen', value === 'item-1')}
     >
       <AccordionItem value="item-1">
         <AccordionTrigger>
           <div>
-            <b>Nettodarlehen:</b> {props.overall.toFixed(0)}€
-            <b className="pl-3">Über:</b> {(props.overall - props.amount).toFixed(0)}€
-            <b className="pl-3">Kaufnebenkosten:</b> {((props.amount * (grunderwerbsteuer.value.rate + landEntry.value + notaryFees.value + makler.value.makler!)) / 100.0).toFixed(0)}€
+            <b>Nettodarlehen:</b> {overall.toFixed(0)}€
+            <b className="pl-3">Über:</b> {(overall - amount).toFixed(0)}€
+            <b className="pl-3">Kaufnebenkosten:</b> {((amount * (grundRate.rate + landEntry + notaryFees + makler.makler!)) / 100.0).toFixed(0)}€
           </div>
         </AccordionTrigger>
         <AccordionContent className="pb">
@@ -72,17 +75,22 @@ export default function Details({ ...props }) {
             <div className="md:col-span-3 w-full items-center pt-4">
               <Label htmlFor="grund-rate" className="pb-2">Grunderwerbsteuer (required)</Label>
               <InputGroup className="rounded">
-                <InputGroupInput id="grund-rate" readOnly value={grunderwerbsteuer.value.rate.toFixed(1)} />
+                <InputGroupInput id="grund-rate" readOnly value={grundRate.rate.toFixed(1)} />
                 <InputGroupAddon>
                   <InputGroupText>%</InputGroupText>
                 </InputGroupAddon>
                 <InputGroupAddon align="end">
                   <Menubar>
                     <MenubarMenu>
-                      <MenubarTrigger className="cursor-pointer">{grunderwerbsteuer.value.title}</MenubarTrigger>
+                      <MenubarTrigger className="cursor-pointer">
+                        {grundRate.title}
+                      </MenubarTrigger>
                       <MenubarContent className="rounded">
                         {GRUNDERWERBSTEUER_LIST.map((g) => (
-                          <MenubarItem key={g.rank} className="flex justify-between cursor-pointer" onClick={() => onSelectRate(g.rank)}>
+                          <MenubarItem key={g.rank}
+                            className="flex justify-between cursor-pointer"
+                            onClick={() => handleChange('grundRate', g.rank)}
+                          >
                             <div>{g.title}</div>
                             <div>{`${Number(g.rate).toFixed(1)}%`}</div>
                           </MenubarItem>
@@ -96,7 +104,7 @@ export default function Details({ ...props }) {
 
             <div className="md:col-span-2 w-full items-center pt-4">
               <Label htmlFor="notary-fees" className="pb-2">
-                Notarkosten, {((props.amount * notaryFees.value) / 100).toFixed(0)} €
+                Notarkosten, {((amount * notaryFees) / 100).toFixed(0)} €
               </Label>
               <InputGroup className="rounded pb-0">
                 <InputGroupAddon>
@@ -104,11 +112,11 @@ export default function Details({ ...props }) {
                 </InputGroupAddon>
                 <InputGroupInput
                   id="notary-fees"
-                  value={notaryFees.value.toFixed(2)}
+                  value={notaryFees.toFixed(2)}
                   min="0"
                   step="0.05"
                   type="number"
-                  onChange={(e: any) => notaryFees.value = Number(e.target.value)}
+                  onChange={(e: any) => handleChange('notaryFees', Number(e.target.value))}
                 />
                 <InputGroupAddon align="inline-end">
                   <InputGroupText>Prozent</InputGroupText>
@@ -118,7 +126,7 @@ export default function Details({ ...props }) {
 
             <div className="md:col-span-2 w-full items-center pt-4">
               <Label htmlFor="land-entry" className="pb-2">
-                Grundbucheintrag, {((props.amount * landEntry.value) / 100).toFixed(0)} €
+                Grundbucheintrag, {((amount * landEntry) / 100).toFixed(0)} €
               </Label>
               <InputGroup className="rounded pb-0">
                 <InputGroupAddon>
@@ -126,11 +134,11 @@ export default function Details({ ...props }) {
                 </InputGroupAddon>
                 <InputGroupInput
                   id="land-entry"
-                  value={landEntry.value.toFixed(2)}
+                  value={landEntry.toFixed(2)}
                   min="0"
                   step="0.05"
                   type="number"
-                  onChange={(e: any) => landEntry.value = Number(e.target.value)}
+                  onChange={(e: any) => handleChange('landEntry', Number(e.target.value))}
                 />
                 <InputGroupAddon align="inline-end">
                   <InputGroupText>Prozent</InputGroupText>
@@ -141,21 +149,29 @@ export default function Details({ ...props }) {
             <div className="md:col-span-3 w-full items-center pt-4">
               <Label htmlFor="grund-rate" className="pb-2">Maklerprovision, 0€</Label>
               <InputGroup className="rounded">
-                <InputGroupInput id="grund-rate" readOnly value={makler.value.makler!.toFixed(2)} />
+                <InputGroupInput id="grund-rate" readOnly value={makler.makler!.toFixed(2)} />
                 <InputGroupAddon>
                   <InputGroupText>%</InputGroupText>
                 </InputGroupAddon>
                 <InputGroupAddon align="end">
                   <Menubar>
                     <MenubarMenu>
-                      <MenubarTrigger className="cursor-pointer">{makler.value.title}</MenubarTrigger>
+                      <MenubarTrigger className="cursor-pointer">{makler.title}</MenubarTrigger>
                       <MenubarContent className="rounded">
-                        <MenubarItem key={UNSELECTED.rank} className="flex justify-between cursor-pointer" onClick={() => onSelectMakler(UNSELECTED.rank)}>
+                        <MenubarItem
+                          key={UNSELECTED.rank}
+                          className="flex justify-between cursor-pointer"
+                          onClick={() => handleChange('makler', UNSELECTED.rank)}
+                        >
                           <div>{UNSELECTED.title}</div>
                           <div>{`${Number(UNSELECTED.makler).toFixed(1)}%`}</div>
                         </MenubarItem>
                         {GRUNDERWERBSTEUER_LIST.map((g) => (
-                          <MenubarItem key={g.rank} className="flex justify-between cursor-pointer" onClick={() => onSelectMakler(g.rank)}>
+                          <MenubarItem
+                            key={g.rank}
+                            className="flex justify-between cursor-pointer"
+                            onClick={() => handleChange('makler', g.rank)}
+                          >
                             <div>{g.title}</div>
                             <div>{`${Number(g.makler).toFixed(2)}%`}</div>
                           </MenubarItem>

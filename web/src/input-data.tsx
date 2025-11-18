@@ -1,6 +1,6 @@
 import { InputGroup, InputGroupAddon, InputGroupText, InputGroupInput } from "./components/ui/input-group";
 import { Label } from "./components/ui/label";
-import type { IInputData } from "./layout";
+import type { IInputData } from "./model";
 
 export default function InputData({ ...props }) {
 
