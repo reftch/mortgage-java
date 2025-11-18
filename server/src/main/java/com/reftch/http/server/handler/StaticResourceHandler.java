@@ -3,6 +3,7 @@ package com.reftch.http.server.handler;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class StaticResourceHandler {
             sendSuccessfulResponse(exchange, response, contentType, resourcePath);
 
         } catch (IOException | URISyntaxException e) {
-            
+
             throw new IOException("Error reading resource: " + resourcePath, e);
         } finally {
             closeInputStream(inputStream);
@@ -116,7 +117,12 @@ public class StaticResourceHandler {
      * @throws IOException if there's an error sending the response
      */
     private void sendNotFoundResponse(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(404, 0);
+        String response = "404 - Resource Not Found";
+        exchange.sendResponseHeaders(404, response.getBytes().length);
+
+        OutputStream os = exchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
     }
 
     /**
