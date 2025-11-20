@@ -1,5 +1,6 @@
 package com.reftch.utilities;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -42,6 +43,37 @@ public class ClassFinder {
             }
         }
         
+        // If no main class found in the stack trace, return null
+        return null;
+    }
+
+    public static Class<?> findClassByAnnotation(Class<? extends Annotation> annotationClass) {
+        // Try to detect main class based on calling context stack trace
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+
+        // Iterate through the stack trace from newest to oldest
+        for (int i = stack.length - 1; i >= 0; i--) {
+            try {
+                String className = stack[i].getClassName();
+                // System.out.println("Class name :" + className);
+                // System.out.println("Clazz name :" + stack[i]);
+                Class<?> clazz = Class.forName(className);
+                // System.out.println("Clazz :" + clazz.getCanonicalName());
+                // System.out.println("Is annotated: " + clazz.isAnnotationPresent(annotationClass));
+
+                if (clazz.isAnnotationPresent(annotationClass)) {
+                    return clazz;
+                }
+
+            } catch (ClassNotFoundException e) {
+                // Ignore classes that cannot be loaded and continue searching
+                // This is expected for system classes in the stack trace
+            } catch (SecurityException e) {
+                // Security restrictions prevent class loading - continue searching
+                // This can happen in restricted environments
+            }
+        }
+
         // If no main class found in the stack trace, return null
         return null;
     }

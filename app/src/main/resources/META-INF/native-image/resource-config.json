@@ -1,0 +1,18 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "pattern": "META-INF/native-image/reflect-config.json"
+      },
+      {
+        "pattern": "application.yaml"
+      },
+      {
+        "pattern": "static/.*"
+      },
+      {
+        "pattern": "views/.*"
+      }
+    ]
+  }
+}

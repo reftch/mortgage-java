@@ -22,6 +22,9 @@ public class ResourceService {
 
     private static volatile ResourceService instance;
 
+    private ResourceService() {
+    }
+
     public static synchronized ResourceService getInstance() {
          if (instance == null) {
             synchronized (ResourceService.class) {
@@ -87,6 +90,7 @@ public class ResourceService {
             fileCache.put(cacheKey, content);
             return content;
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException("Failed to read file: " + filePath, e);
         }
     }

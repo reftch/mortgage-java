@@ -5,14 +5,15 @@ import com.reftch.annotation.Inject;
 import com.reftch.annotation.Route;
 import com.reftch.mortgage.service.LayoutService;
 
-@Controller(basePath = "/")
-public class HomeConroller {
-    
+@Controller
+public class PageController {
+
     @Inject
     private LayoutService layoutService;
 
     @Route(method = "GET", path = "/")
-    public String home() {
+    public String getHome() {
         return layoutService.getHome();
     }
-}
+
+} 

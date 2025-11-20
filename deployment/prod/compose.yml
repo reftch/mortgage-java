@@ -8,7 +8,7 @@ services:
     #   - 8080:8082
     build:
       context: ../..
-      dockerfile: ./deployment/prod/Dockerfile
+      dockerfile: ./deployment/prod/dockerfile-graalvm
     restart: unless-stopped
     networks:
       - traefik_proxy

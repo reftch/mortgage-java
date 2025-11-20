@@ -15,7 +15,8 @@ public class LayoutService {
     public String getHome() {
         var values = Map.of(
                 "title", "Hypothekenrechner",
-                "mode.isProduction", config.getValue("server.isProduction"));
+                "mode.isProduction", config.getValue("server.isProduction")
+            );
         return resourceService.getFileContent("views/index.html", values);
     }
 

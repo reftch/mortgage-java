@@ -1,0 +1,29 @@
+[
+  {
+    "name": "com.reftch.mortgage.App",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.reftch.mortgage.service.LayoutService",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.reftch.mortgage.controller.PageController",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allPrivateMethods": true,
+    "fields": [
+      {
+        "name": "layoutService"
+      }
+    ]
+  }
+]

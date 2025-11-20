@@ -16,7 +16,6 @@ public class Server {
     private HttpServer httpServer;
     private final ConfigurationService config;
     private final RequestProcessor requestProcessor;
-    private final DependencyInjector dependencyInjector;
 
     long start = System.nanoTime();
 
@@ -28,10 +27,7 @@ public class Server {
     private Server() {
         this.config = ConfigurationService.getInstance();
         this.requestProcessor = new RequestProcessor(); 
-        this.dependencyInjector = new DependencyInjector(requestProcessor);
-
-        dependencyInjector.registerServices();
-        dependencyInjector.registerControllers();
+        new DependencyInjector(requestProcessor);
 
         start();
     }
