@@ -57,7 +57,4 @@ COPY --from=build-stage /distro/app/ $JAVA_HOME
 
 WORKDIR $JAVA_HOME
 
-# Optionally expose the server port
-# EXPOSE 8081
-
 ENTRYPOINT ["bin/app"]
