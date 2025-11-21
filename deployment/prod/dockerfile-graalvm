@@ -36,12 +36,13 @@ RUN --mount=type=cache,target=${WORKDIR}/.gradle \
 
 # -------- Stage 2: Running application ----------
 FROM alpine:3 AS release-stage
-
 # Install the `gcompat` package in your Alpine Dockerfile to provide a compatibility layer for `glibc` binaries.
 RUN apk add --no-cache gcompat
+
 # Copy artifact
 COPY --from=build-stage /app/app/build/native/nativeCompile/app /app/app
 # Set the timezone to Berlin
 ENV TZ=Europe/Berlin
+
 # Run the application
 ENTRYPOINT ["/app/app"]
