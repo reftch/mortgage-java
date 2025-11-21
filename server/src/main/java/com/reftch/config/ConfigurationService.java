@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -259,7 +258,7 @@ public class ConfigurationService {
         Deque<String> keyStack = new ArrayDeque<>();
         int previousIndentLevel = 0;
 
-        for (String line : lines) {
+        for (var line : lines) {
             if (line.trim().isEmpty() || line.trim().startsWith("#")) {
                 continue;
             }
@@ -272,8 +271,8 @@ public class ConfigurationService {
             }
 
             String[] parts = line.split(":", 2);
-            String key = parts[0].trim();
-            String value = parts[1].trim();
+            var key = parts[0].trim();
+            var value = parts[1].trim();
 
             // Pop keys when current indent is less than the previous line's indent
             while (indentLevel < previousIndentLevel && !keyStack.isEmpty()) {
@@ -287,10 +286,10 @@ public class ConfigurationService {
                 previousIndentLevel = indentLevel + 1;
             } else {
                 // Compose full key path from stack plus current key (reversed stack)
-                List<String> fullKeyParts = new ArrayList<>(keyStack);
+                var fullKeyParts = new ArrayList<>(keyStack);
                 Collections.reverse(fullKeyParts);
                 fullKeyParts.add(key);
-                String fullKey = String.join(".", fullKeyParts);
+                var fullKey = String.join(".", fullKeyParts);
 
                 String processedValue = processEnvironmentVariables(value);
                 configMap.put(fullKey, removeQuotes(processedValue));
