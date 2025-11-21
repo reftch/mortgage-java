@@ -10,6 +10,6 @@ public record ReflectionEntry(
         boolean allPublicMethods,
         boolean allPrivateMethods,
         List<Field> fields) {
-    record Field(String name) {
+    public record Field(String name) {
     }
 }
