@@ -70,5 +70,10 @@ clean:
 	rm -rf ./web/node_modules
 	rm -rf ./app/src/main/resources/static/ui
 	rm -rf .gradle build
+	find . -type f \( -name ".project" -o -name ".classpath" \) -print -exec rm -f {} +
+	find . -type d -name "bin" -exec rm -rf {} +
+	find . -type d -name ".settings" -exec rm -rf {} +
+
+
 
 
