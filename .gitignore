@@ -12,3 +12,8 @@ bin
 app/src/main/resources/static/ui
 
 .DS_Store
+
+.project 
+.settings
+.classpath
+
