@@ -34,28 +34,57 @@ public class DependencyInjector {
 
     public void registerServices() {
         try {
-            for (var entry : reflectionEntries) {
+            // Phase 1: Instantiate Services
+            instantiateServices();
+
+            // Phase 2: Inject dependencies into Services
+            injectServiceDependencies();
+
+            // Phase 3: Register Controllers
+            registerControllers();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error during registering services", e);
+        }
+    }
+
+    private void instantiateServices() {
+        for (var entry : reflectionEntries) {
+            try {
                 Class<?> clazz = Class.forName(entry.name());
                 if (clazz.isAnnotationPresent(Service.class)) {
                     logger.log(Level.INFO, "Registering service: {0}", clazz.getName());
-                    try {
-                        services.put(clazz.getName(), clazz.getDeclaredConstructor().newInstance());
-                    } catch (Exception e) {
-                        logger.log(Level.WARNING, "Failed to instantiate service: {0}", clazz.getName());
-                    }
-                } else if (clazz.isAnnotationPresent(Controller.class)) {
-                    logger.log(Level.INFO, "Registering controller: {0}", clazz.getName());
-                    try {
-                        Object controller = clazz.getDeclaredConstructor().newInstance();
-                        injectDependencies(controller, clazz);
-                        registerRoutes(controller);
-                    } catch (Exception e) {
-                        logger.log(Level.WARNING, "Failed to instantiate controller: {0}", clazz.getName());
-                    }
+                    services.put(clazz.getName(), clazz.getDeclaredConstructor().newInstance());
                 }
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to instantiate service: " + entry.name(), e);
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error during registering services", e);
+        }
+    }
+
+    private void injectServiceDependencies() {
+        for (Object service : services.values()) {
+            try {
+                injectDependencies(service, service.getClass());
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to inject dependencies for service: " + service.getClass().getName(),
+                        e);
+            }
+        }
+    }
+
+    private void registerControllers() {
+        for (var entry : reflectionEntries) {
+            try {
+                Class<?> clazz = Class.forName(entry.name());
+                if (clazz.isAnnotationPresent(Controller.class)) {
+                    logger.log(Level.INFO, "Registering controller: {0}", clazz.getName());
+                    Object controller = clazz.getDeclaredConstructor().newInstance();
+                    injectDependencies(controller, clazz);
+                    registerRoutes(controller);
+                }
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to instantiate controller: " + entry.name(), e);
+            }
         }
     }
 

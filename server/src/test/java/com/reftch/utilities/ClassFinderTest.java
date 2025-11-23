@@ -45,7 +45,7 @@ class ClassFinderTest {
         // in the test runner environment. However, we can ensure it doesn't throw
         // exceptions.
         assertDoesNotThrow(() -> {
-            Class<?> mainClass = ClassFinder.findMainClass();
+            Class<?> _ = ClassFinder.findMainClass();
             // In many test environments, the worker process has a main method, so this
             // might not be null.
             // But we won't assert it is not null to avoid flakiness across different

@@ -64,7 +64,7 @@ class DependencyInjectorTest {
                     when(mock.getReflectionEntries()).thenReturn(entries);
                 })) {
 
-            DependencyInjector injector = new DependencyInjector(requestProcessor);
+            new DependencyInjector(requestProcessor);
 
             // We can't easily access the private services map, but we can verify behavior
             // indirectly
@@ -261,6 +261,79 @@ class DependencyInjectorTest {
 
         public AnotherService getAnotherService() {
             return anotherService;
+        }
+    }
+
+    @Test
+    void testServiceToServiceInjection() {
+        List<ReflectionEntry> entries = new ArrayList<>();
+        entries.add(new ReflectionEntry(ServiceA.class.getName(), true, true, true, true, true, null));
+        entries.add(new ReflectionEntry(ServiceB.class.getName(), true, true, true, true, true, null));
+
+        try (MockedConstruction<ReflectionConfigParser> _ = mockConstruction(ReflectionConfigParser.class,
+                (mock, context) -> {
+                    when(mock.getReflectionEntries()).thenReturn(entries);
+                })) {
+
+            new DependencyInjector(requestProcessor);
+
+            // We need to verify that ServiceB has ServiceA injected.
+            // Since we can't easily access the services map, we'll use reflection on the
+            // ServiceB instance
+            // if we could get it. But we can't get it from injector directly.
+            // However, we can verify that no exception was thrown, which means injection
+            // didn't fail.
+            // To be more precise, we can use a Controller to expose ServiceB.
+        }
+    }
+
+    @Test
+    void testServiceToServiceInjectionVerifiedViaController() {
+        List<ReflectionEntry> entries = new ArrayList<>();
+        entries.add(new ReflectionEntry(ServiceA.class.getName(), true, true, true, true, true, null));
+        entries.add(new ReflectionEntry(ServiceB.class.getName(), true, true, true, true, true, null));
+        entries.add(new ReflectionEntry(ControllerWithServiceB.class.getName(), true, true, true, true, true, null));
+
+        List<RouteHandler> routeHandlers = new ArrayList<>();
+        when(requestProcessor.getRouteHandlers()).thenReturn(routeHandlers);
+
+        try (MockedConstruction<ReflectionConfigParser> _ = mockConstruction(ReflectionConfigParser.class,
+                (mock, context) -> {
+                    when(mock.getReflectionEntries()).thenReturn(entries);
+                })) {
+
+            new DependencyInjector(requestProcessor);
+
+            assertEquals(1, routeHandlers.size());
+            RouteHandler handler = routeHandlers.get(0);
+            ControllerWithServiceB controller = (ControllerWithServiceB) handler.getController();
+
+            assertNotNull(controller.serviceB);
+            assertNotNull(controller.serviceB.serviceA);
+            assertEquals("ServiceA", controller.serviceB.serviceA.getData());
+        }
+    }
+
+    @Service
+    public static class ServiceA {
+        public String getData() {
+            return "ServiceA";
+        }
+    }
+
+    @Service
+    public static class ServiceB {
+        @Inject
+        ServiceA serviceA;
+    }
+
+    @Controller
+    public static class ControllerWithServiceB {
+        @Inject
+        ServiceB serviceB;
+
+        @Route(method = "GET", path = "/service-chain")
+        public void test() {
         }
     }
 
