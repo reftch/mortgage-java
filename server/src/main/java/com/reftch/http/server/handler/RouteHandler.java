@@ -51,4 +51,19 @@ public class RouteHandler {
         this.pattern = Pattern.compile(regex);
     }
 
+    public Object getController() {
+        return controller;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public HttpMethod getHttpMethod() {
+        return httpMethod;
+    }
+
+    public String getPath() {
+        return path;
+    }
 }

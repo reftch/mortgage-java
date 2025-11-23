@@ -119,27 +119,27 @@ public class ConfigurationService {
             return value;
         }
 
-        StringBuffer result = new StringBuffer();
-        Matcher matcher = ENV_VAR_PATTERN.matcher(value);
+        var result = new StringBuffer();
+        var matcher = ENV_VAR_PATTERN.matcher(value);
         boolean foundMatch = false;
 
         while (matcher.find()) {
             foundMatch = true;
             // Group 1: environment variable name
-            String envVarName = matcher.group(1);
+            var envVarName = matcher.group(1);
             // Group 2: optional default value (may be null)
-            String defaultValue = matcher.group(2);
+            var defaultValue = matcher.group(2);
 
             // Retrieve environment variable value
-            String envValue = System.getenv(envVarName);
+            var envValue = System.getenv(envVarName);
 
             // Use the environment variable if set and not empty; otherwise, default value
-            String replacement = (envValue != null && !envValue.isEmpty()) ? envValue
+            var replacement = (envValue != null && !envValue.isEmpty()) ? envValue
                     : (defaultValue != null ? defaultValue : "");
 
             // Escape replacement string to handle special characters correctly in regex
             // replacement
-            String escapedReplacement = Matcher.quoteReplacement(replacement);
+            var escapedReplacement = Matcher.quoteReplacement(replacement);
 
             matcher.appendReplacement(result, escapedReplacement);
         }
@@ -214,7 +214,7 @@ public class ConfigurationService {
      *         found or parsing fails
      */
     public int getInt(String key) {
-        String val = configMap.get(key);
+        var val = configMap.get(key);
         if (val == null) {
             return 0;
         }
@@ -237,7 +237,7 @@ public class ConfigurationService {
      *         found or parsing fails
      */
     public boolean getBoolean(String key) {
-        String val = configMap.get(key);
+        var val = configMap.get(key);
         if (val == null) {
             return false;
         }
