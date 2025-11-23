@@ -38,12 +38,20 @@ public class DependencyInjector {
                 Class<?> clazz = Class.forName(entry.name());
                 if (clazz.isAnnotationPresent(Service.class)) {
                     logger.log(Level.INFO, "Registering service: {0}", clazz.getName());
-                    services.put(clazz.getName(), clazz.getDeclaredConstructor().newInstance());
+                    try {
+                        services.put(clazz.getName(), clazz.getDeclaredConstructor().newInstance());
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, "Failed to instantiate service: {0}", clazz.getName());
+                    }
                 } else if (clazz.isAnnotationPresent(Controller.class)) {
                     logger.log(Level.INFO, "Registering controller: {0}", clazz.getName());
-                    Object controller = clazz.getDeclaredConstructor().newInstance();
-                    injectDependencies(controller, clazz);
-                    registerRoutes(controller);
+                    try {
+                        Object controller = clazz.getDeclaredConstructor().newInstance();
+                        injectDependencies(controller, clazz);
+                        registerRoutes(controller);
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, "Failed to instantiate controller: {0}", clazz.getName());
+                    }
                 }
             }
         } catch (Exception e) {

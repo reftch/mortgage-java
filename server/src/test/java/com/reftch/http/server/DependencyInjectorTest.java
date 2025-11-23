@@ -1,5 +1,6 @@
 package com.reftch.http.server;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,7 +59,7 @@ class DependencyInjectorTest {
         List<ReflectionEntry> entries = new ArrayList<>();
         entries.add(new ReflectionEntry(TestService.class.getName(), true, true, true, true, true, null));
 
-        try (MockedConstruction<ReflectionConfigParser> mockedParser = mockConstruction(ReflectionConfigParser.class,
+        try (MockedConstruction<ReflectionConfigParser> _ = mockConstruction(ReflectionConfigParser.class,
                 (mock, context) -> {
                     when(mock.getReflectionEntries()).thenReturn(entries);
                 })) {
@@ -85,7 +86,7 @@ class DependencyInjectorTest {
         List<RouteHandler> routeHandlers = new ArrayList<>();
         when(requestProcessor.getRouteHandlers()).thenReturn(routeHandlers);
 
-        try (MockedConstruction<ReflectionConfigParser> mockedParser = mockConstruction(ReflectionConfigParser.class,
+        try (MockedConstruction<ReflectionConfigParser> _ = mockConstruction(ReflectionConfigParser.class,
                 (mock, context) -> {
                     when(mock.getReflectionEntries()).thenReturn(entries);
                 })) {
@@ -106,7 +107,7 @@ class DependencyInjectorTest {
         entries.add(
                 new ReflectionEntry(TestControllerWithDependency.class.getName(), true, true, true, true, true, null));
 
-        try (MockedConstruction<ReflectionConfigParser> mockedParser = mockConstruction(ReflectionConfigParser.class,
+        try (MockedConstruction<ReflectionConfigParser> _ = mockConstruction(ReflectionConfigParser.class,
                 (mock, context) -> {
                     when(mock.getReflectionEntries()).thenReturn(entries);
                 })) {
@@ -164,7 +165,7 @@ class DependencyInjectorTest {
         List<RouteHandler> routeHandlers = new ArrayList<>();
         when(requestProcessor.getRouteHandlers()).thenReturn(routeHandlers);
 
-        try (MockedConstruction<ReflectionConfigParser> mockedParser = mockConstruction(ReflectionConfigParser.class,
+        try (MockedConstruction<ReflectionConfigParser> _ = mockConstruction(ReflectionConfigParser.class,
                 (mock, context) -> {
                     when(mock.getReflectionEntries()).thenReturn(entries);
                 })) {
@@ -181,4 +182,86 @@ class DependencyInjectorTest {
             assertEquals("data", typedController.getTestService().getData());
         }
     }
+
+    @Test
+    void testServiceWithoutDefaultConstructor() {
+        // Mocking a class without default constructor to simulate error case
+        List<ReflectionEntry> entries = new ArrayList<>();
+        entries.add(
+                new ReflectionEntry(NoDefaultConstructorService.class.getName(), true, true, true, true, true, null));
+
+        try (MockedConstruction<ReflectionConfigParser> _ = mockConstruction(ReflectionConfigParser.class,
+                (mock, context) -> {
+                    when(mock.getReflectionEntries()).thenReturn(entries);
+                })) {
+
+            assertDoesNotThrow(() -> new DependencyInjector(requestProcessor));
+        }
+    }
+
+    @Service
+    public static class NoDefaultConstructorService {
+        public NoDefaultConstructorService(String param) {
+        }
+    }
+
+    @Test
+    void testMultipleDependencyInjection() {
+        List<ReflectionEntry> entries = new ArrayList<>();
+        entries.add(new ReflectionEntry(TestService.class.getName(), true, true,
+                true, true, true, null));
+        entries.add(new ReflectionEntry(AnotherService.class.getName(), true, true,
+                true, true, true, null));
+        entries.add(new ReflectionEntry(MultiInjectController.class.getName(), true,
+                true, true, true, true, null));
+
+        List<RouteHandler> routeHandlers = new ArrayList<>();
+        when(requestProcessor.getRouteHandlers()).thenReturn(routeHandlers);
+
+        try (MockedConstruction<ReflectionConfigParser> _ = mockConstruction(ReflectionConfigParser.class,
+                (mock, context) -> {
+                    when(mock.getReflectionEntries()).thenReturn(entries);
+                })) {
+
+            new DependencyInjector(requestProcessor);
+
+            assertEquals(1, routeHandlers.size());
+            RouteHandler handler = routeHandlers.get(0);
+            Object controller = handler.getController();
+            assertTrue(controller instanceof MultiInjectController);
+
+            MultiInjectController typedController = (MultiInjectController) controller;
+            assertNotNull(typedController.getTestService());
+            assertNotNull(typedController.getAnotherService());
+        }
+    }
+
+    @Service
+    public static class AnotherService {
+        public String getData2() {
+            return "data2";
+        }
+    }
+
+    @Controller
+    public static class MultiInjectController {
+        @Inject
+        private TestService testService;
+
+        @Inject
+        private AnotherService anotherService;
+
+        @Route(method = "GET", path = "/multi")
+        public void test() {
+        }
+
+        public TestService getTestService() {
+            return testService;
+        }
+
+        public AnotherService getAnotherService() {
+            return anotherService;
+        }
+    }
+
 }
