@@ -1,6 +1,6 @@
 name: mortgage
 
-services:  
+services:
   app:
     env_file: ./.env
     image: mortgage:1.0.0

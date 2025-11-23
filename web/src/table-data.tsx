@@ -42,8 +42,10 @@ export default function TableData(props: TableDataProps) {
                 key={uuidv4()}
                 className={row.cells[7].value > 0 ? '!bg-input' : 'odd:bg-background even:bg-header'}
               >
-                {row.cells.map((cell: Cell) => (
-                  <TableCell className="font-medium">{cell.value}</TableCell>
+                {row.cells.map((cell: Cell, index: number) => (
+                  <TableCell className="font-medium">
+                    {index === 7 && cell.value === 0 ? "" : cell.value}
+                  </TableCell>
                 ))}
               </TableRow>
             ))}
